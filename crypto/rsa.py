@@ -1,10 +1,12 @@
 import warnings
-from utilities import is_integer
+from utilities import is_integer, read_file_into_bytes, gcd, modular_multiplicative_inverse
+from sympy.ntheory.generate import randprime
+from random import randint
 
 
 class RSA:
     @staticmethod
-    def encrypt_value(message, n, e):
+    def encrypt_number(message, n, e):
         """
         :param message:
         Integer representing the message that needs to be encrypted
@@ -26,7 +28,7 @@ class RSA:
         return pow(message, e, n)
 
     @staticmethod
-    def decrypt_value(crypt, n, d):
+    def decrypt_number(crypt, n, d):
         """
         :param crypt:
         Integer representing the cryptotext that needs to be decrypted
@@ -44,3 +46,36 @@ class RSA:
             raise ValueError("Cannot decrypt values larger than the n modulus!")
 
         return pow(crypt, d, n)
+
+    @staticmethod
+    def encrypt_file(file_path, n, e):
+        """
+        :param file_path:
+        Path of the file that needs to be encrypted.
+        :param n:
+        RSA public modulus n.
+        :param e:
+        RSA public key e.
+        :return:
+        """
+        content = read_file_into_bytes(file_path)
+        encryption = []
+        for b in content:
+            encryption.append(RSA.encrypt_number(b, n, e))
+        return encryption
+
+    @staticmethod
+    def generate_public_key(phi):
+        e = randint(2, phi)
+        while gcd(phi, e) != 1:
+            e = randint(2, phi)
+        return e
+
+    @staticmethod
+    def generate_rsa_keypair(bit_number=1024):
+        p = randprime(2 ** (bit_number / 2 - 1), 2 ** (bit_number / 2))
+        q = randprime(2 ** (bit_number / 2 - 1), 2 ** (bit_number / 2))
+        phi = (p - 1)*(q - 1)
+        e = RSA.generate_public_key(phi)
+        d = modular_multiplicative_inverse(e, phi)
+        return p * q, e, d
