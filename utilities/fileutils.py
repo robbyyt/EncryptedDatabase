@@ -1,5 +1,5 @@
 import os
-
+from math import ceil
 
 def get_file_size(file_path):
     """
@@ -16,6 +16,14 @@ def get_file_size(file_path):
 
 
 def split_into_chunks(source, chunk_size):
+    """
+    :param source:
+    Data source to split. (must be iterable)
+    :param chunk_size:
+    Chunk size
+    :return:
+    The source split in chunks of chunk_size elements.
+    """
     output = []
     for i in range(0, len(source), chunk_size):
         output.append(source[i: i + chunk_size])
@@ -48,10 +56,36 @@ def read_file_into_bytes(file_path, chunk_size=None):
         raise e
 
 
+def reconstruct_file_content(file_size, chunk_size, content):
+    """
+    :param file_size:
+    Size of the file.
+    :param chunk_size:
+    Chunk size used for encryption.
+    :param content:
+    Decrypted content of the file.
+    :return:
+    Bytes object representing the initial state of the file.
+    """
+    last_chunk = file_size % chunk_size
+    print(last_chunk)
+    result = b""
+    for i in range(len(content)):
+        if i < len(content) - 1:
+            result += content[i].to_bytes(chunk_size, 'big')
+        elif last_chunk > 0:
+            result += content[i].to_bytes(last_chunk, 'big')
+        elif last_chunk == 0:
+            result += content[i].to_bytes(chunk_size, 'big')
+
+    return result
+
+
 if __name__ == '__main__':
     file = read_file_into_bytes("../test_files/test.txt")
     printable = [b for b in file]
     print(printable)
-    file = read_file_into_bytes("../test_files/test.txt", 2)
+    file = read_file_into_bytes("../test_files/test.txt", chunk_size=get_file_size("../test_files/test.txt"))
     printable = [b for b in file]
     print(printable)
+    print(get_file_size("../test_files/test.txt"))
