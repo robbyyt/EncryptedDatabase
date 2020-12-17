@@ -28,7 +28,7 @@ class DBConnection:
 
 if __name__ == '__main__':
     conn = DBConnection()
-    fid = conn.add_one_file({"key": "value"})
+    # fid = conn.add_one_file({"key": "value"})
     # print(conn.delete_one_file("5fd949e3edf8df2e4bfa6cdb"))
-    files = conn.get_file_by_id(fid)
+    files = conn.get_file_by_id("626898c9-b726-4d57-b2d3-91c7676fe543")
     print(files)

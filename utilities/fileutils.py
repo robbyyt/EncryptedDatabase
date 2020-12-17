@@ -68,7 +68,6 @@ def reconstruct_file_content(file_size, chunk_size, content):
     Bytes object representing the initial state of the file.
     """
     last_chunk = file_size % chunk_size
-    print(last_chunk)
     result = b""
     for i in range(len(content)):
         if i < len(content) - 1:
