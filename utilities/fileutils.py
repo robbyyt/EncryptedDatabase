@@ -1,5 +1,5 @@
 import os
-from math import ceil
+
 
 def get_file_size(file_path):
     """

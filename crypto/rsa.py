@@ -6,6 +6,9 @@ from math import ceil
 
 
 class RSA:
+    """
+    Encapsulates the method needed for RSA encryption and decryption on numbers and files.
+    """
     @staticmethod
     def encrypt_number(message, n, e):
         """
