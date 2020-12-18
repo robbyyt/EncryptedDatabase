@@ -6,7 +6,7 @@ import uuid
 import os
 
 
-def add(file_path):
+def add(file_path, enc_location):
     if not os.path.isfile(file_path):
         raise ValueError("Only files can be added to the database")
 
@@ -16,7 +16,8 @@ def add(file_path):
     uid = str(uuid.uuid4())
     full_name = uid + "_" + name
 
-    save_location = "../encryptions/" + full_name
+    save_location = enc_location + r"\\" + full_name
+    print("SAVING AT: " + save_location)
     with open(save_location, 'w') as f:
         to_write = ""
         for num in enc:
@@ -40,7 +41,7 @@ def add(file_path):
     return True
 
 
-def read(file_path):
+def read(file_path, dec_location):
     if not os.path.isfile(file_path):
         raise ValueError("Only files can be read from the database")
 
@@ -74,14 +75,44 @@ def read(file_path):
 
     decryption = RSA.decrypt_file_content(content, n, d)
     file_content = reconstruct_file_content(file_size, chunk_size, decryption)
-
-    with open("../decryptions/" + file_name, 'wb') as f:
+    save_location = dec_location + r"\\" + file_name
+    print("READING INTO: " + save_location)
+    with open(save_location, 'wb') as f:
         f.write(file_content)
         f.close()
 
     return True
 
 
-if __name__ == '__main__':
-    # add(r"C:\Users\rober\Pictures\bby.jpg")
-    read("../encryptions/3edfcc79-94c9-4515-b8e9-0e925159b692_bby.jpg")
+def delete(file_path):
+    if not os.path.isfile(file_path):
+        raise ValueError("Only files can be deleted from the database")
+
+    name = Path(file_path).name
+    split_name = name.split("_")
+    if len(split_name) != 2:
+        raise ValueError("The input file must have a name of type: uid_filename")
+
+    uid, file_name = split_name
+    conn = DBConnection()
+    files_found = conn.get_file_by_id(uid)
+
+    if len(files_found) == 0:
+        print("[Delete]No files found...")
+        return False
+    elif len(files_found) > 1:
+        print("[Delete]Too many matches for uid")
+        return False
+
+    file_obj = files_found[0]
+    deleted = conn.delete_one_file(file_obj["uid"])
+    if deleted == 0:
+        print("[Delete]Found nothing to delete")
+        return False
+    elif deleted > 1:
+        print("[Delete]Warning! More than one record deleted!")
+
+    os.remove(file_path)
+    return True
+
+
