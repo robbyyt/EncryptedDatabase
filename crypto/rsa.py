@@ -41,6 +41,7 @@ class RSA:
         :param d:
         The RSA private key, chosen so that it is the modular multiplicative inverse modulo phi(n) of e, the public key
         :return:
+        The decryption of crypt using the private key d modulo n: crypt^d mod n
         """
         if not is_integer(crypt) or not is_integer(n) or not is_integer(d):
             raise TypeError("Decryption parameters have to be integers")
@@ -61,6 +62,7 @@ class RSA:
         :param e:
         The RSA public key, chosen so that it is relatively prime to phi(n) = (p-1)(q-1)
         :return:
+        A tuple containing the file size, the chunk size and the encryption.
         """
         file_size = get_file_size(file_path)
         n_size = byte_size(n)
@@ -74,6 +76,7 @@ class RSA:
                 if b >= n:
                     found_bigger = True
                     chunks += 1
+                    content = read_file_into_bytes(file_path, chunk_size=file_size // chunks)
                     break
 
         content = read_file_into_bytes(file_path, chunk_size=file_size // chunks)
@@ -107,7 +110,7 @@ class RSA:
         :param phi:
         The result of applying Euler's totient function on a RSA modulus n
         :return:
-        A randomly generated integer modulo phi that is coprime to phi
+        A randomly generated integer modulo phi that is co-prime to phi
         """
         e = randint(2, phi)
         while gcd(phi, e) != 1:

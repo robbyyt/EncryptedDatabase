@@ -18,6 +18,8 @@ if __name__ == '__main__':
         result = add(file_path, enc_location)
     elif command == "delete":
         result = delete(file_path)
+    else:
+        result = False
 
     if result is True:
         print("Success")

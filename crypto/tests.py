@@ -4,6 +4,7 @@ from utilities import reconstruct_file_content
 if __name__ == '__main__':
     print("RSA sample usage")
     n, e, d = RSA.generate_rsa_keypair()
+    print("PUBLIC KEY:\n n = %d\n e = %d" % (n, e))
     fs, chunk_size, enc = RSA.encrypt_file("../test_files/test.txt", n, e)
     dec = RSA.decrypt_file_content(enc, n, d)
     print("Encryption: " + str(enc))
